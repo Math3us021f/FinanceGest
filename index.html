@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinanceGest</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <!-- AUTENTICAÇÃO (inalterada) -->
+  <main id="auth" class="card narrow" hidden>
+    <h1>FinanceGest</h1>
+
+    <form id="form-login">
+      <label>E-mail <input type="email" name="email" required autocomplete="username"></label>
+      <label>Senha <input type="password" name="senha" required autocomplete="current-password"></label>
+      <button class="primary">Entrar</button>
+    </form>
+
+    <form id="form-enroll" hidden>
+      <p>Configure o 2FA: escaneie o QR Code no seu app autenticador e digite o código.</p>
+      <img id="qr" alt="QR Code 2FA" width="200" height="200">
+      <p class="muted">Ou digite a chave: <code id="segredo"></code></p>
+      <label>Código de 6 dígitos <input name="codigo" inputmode="numeric" pattern="\d{6}" maxlength="6" required autocomplete="one-time-code"></label>
+      <button class="primary">Ativar e entrar</button>
+    </form>
+
+    <form id="form-challenge" hidden>
+      <p>Informe o código do seu aplicativo autenticador.</p>
+      <label>Código de 6 dígitos <input name="codigo" inputmode="numeric" pattern="\d{6}" maxlength="6" required autocomplete="one-time-code"></label>
+      <button class="primary">Verificar</button>
+    </form>
+
+    <p id="auth-msg" class="erro" role="alert"></p>
+    <button id="btn-cancelar-auth" class="link" hidden>Voltar ao login</button>
+  </main>
+
+  <!-- APLICAÇÃO -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <strong class="brand">FinanceGest</strong>
+      <div class="periodo">
+        <select id="sel-mes" aria-label="Mês"></select>
+        <input id="sel-ano" type="number" min="2000" max="2100" aria-label="Ano">
+      </div>
+      <div class="topbar-acoes">
+        <button id="btn-novo" class="primary">+ Novo lançamento</button>
+        <button id="btn-logout" class="link">Sair</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <!-- Linha 1: indicadores -->
+      <section class="cards" aria-label="Resumo do período">
+        <div class="kpi rec"><span class="kpi-t"><i aria-hidden="true">↗</i> Receitas</span><b id="k-rec" class="pos">R$ 0,00</b><small id="d-rec"></small></div>
+        <div class="kpi desp"><span class="kpi-t"><i aria-hidden="true">↘</i> Despesas</span><b id="k-desp" class="neg">R$ 0,00</b><small id="d-desp"></small></div>
+        <div class="kpi saldo"><span class="kpi-t"><i aria-hidden="true">＝</i> Saldo</span><b id="k-saldo">R$ 0,00</b><small id="d-saldo"></small></div>
+      </section>
+
+      <!-- Linha 2: gráficos -->
+      <section class="graficos">
+        <div class="card">
+          <h2>Evolução (6 meses)</h2>
+          <div class="chart-box" id="box-evol"><canvas id="grafico-evol" aria-label="Receitas e despesas por mês"></canvas></div>
+          <p id="evol-msg" class="vazio" hidden></p>
+        </div>
+        <div class="card">
+          <h2>Despesas por categoria</h2>
+          <div class="cat-wrap" id="box-cat">
+            <div class="chart-box donut"><canvas id="grafico" aria-label="Despesas por categoria"></canvas></div>
+            <ul id="legenda-cat" class="legenda"></ul>
+          </div>
+          <p id="sem-dados" class="vazio" hidden>Nenhuma despesa encontrada no período.</p>
+        </div>
+      </section>
+
+      <!-- Linha 3: lançamentos -->
+      <section class="card">
+        <div class="lanc-head">
+          <h2>Lançamentos</h2>
+          <div class="filtros">
+            <input id="f-texto" type="search" placeholder="Buscar descrição">
+            <select id="f-tipo" aria-label="Tipo"><option value="">Todos</option><option value="despesa">Despesas</option><option value="receita">Receitas</option></select>
+            <select id="f-cat" aria-label="Categoria"><option value="">Todas categorias</option></select>
+            <button id="btn-csv">Exportar CSV</button>
+          </div>
+        </div>
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Pagamento</th><th>Tipo</th><th class="num">Valor</th><th class="acoes-h">Ações</th></tr></thead>
+            <tbody id="lista"></tbody>
+          </table>
+        </div>
+        <p id="lista-vazia" class="vazio" hidden>Nenhum lançamento encontrado.</p>
+      </section>
+    </main>
+
+    <!-- Painel lateral de lançamento -->
+    <div id="overlay" hidden></div>
+    <aside id="drawer" aria-hidden="true" aria-labelledby="form-titulo">
+      <div class="drawer-head">
+        <h2 id="form-titulo">Novo lançamento</h2>
+        <button type="button" id="btn-fechar" class="link" aria-label="Fechar">✕</button>
+      </div>
+      <form id="form-lanc">
+        <div class="seg">
+          <label><input type="radio" name="tipo" value="despesa" checked> Despesa</label>
+          <label><input type="radio" name="tipo" value="receita"> Receita</label>
+        </div>
+        <div class="row">
+          <label>Valor (R$) <input name="valor" type="number" step="0.01" min="0.01" inputmode="decimal" required></label>
+          <label>Data <input name="data" type="date" required></label>
+        </div>
+        <label>Descrição <input name="descricao" required maxlength="120"></label>
+        <div class="row">
+          <label>Categoria
+            <input name="categoria" list="cats" required maxlength="40">
+            <datalist id="cats">
+              <option>Alimentação</option><option>Transporte</option><option>Moradia</option>
+              <option>Lazer</option><option>Saúde</option><option>Educação</option>
+              <option>Salário</option><option>Outros</option>
+            </datalist>
+          </label>
+          <label>Pagamento
+            <select name="metodo_pagamento">
+              <option>Pix</option><option>Crédito</option><option>Débito</option><option>Dinheiro</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <button class="primary">Salvar</button>
+          <button type="button" id="btn-cancelar-edicao">Cancelar</button>
+        </div>
+        <p id="form-msg" class="erro" role="alert"></p>
+      </form>
+    </aside>
+
+    <div id="toast" role="status" aria-live="polite" hidden></div>
+  </div>
+</body>
+</html>

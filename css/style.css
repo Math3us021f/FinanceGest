@@ -1,0 +1,90 @@
+:root{color-scheme:dark;--bg:#0f1115;--card:#181b21;--tx:#e6e8ec;--mut:#9aa3af;--bd:#2a2f38;--pri:#60a5fa;--pos:#4ade80;--neg:#f87171;--gap:12px}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.4 system-ui,sans-serif;background:linear-gradient(180deg,color-mix(in srgb,var(--pri) 8%,var(--bg)),var(--bg) 220px) no-repeat,var(--bg);color:var(--tx)}
+[hidden]{display:none!important}
+h1,h2{margin:0 0 10px}h2{font-size:1rem}
+label{display:grid;gap:4px;font-size:.85rem;color:var(--mut);margin-bottom:10px;flex:1;min-width:0}
+input,select,button{font:inherit;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);min-width:0;transition:filter .15s}
+button{cursor:pointer}button:hover{filter:brightness(1.15)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+button.primary{background:var(--pri);color:#0b1220;border-color:var(--pri);font-weight:600}
+button.link{border:0;background:none;color:var(--pri);padding:4px 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;box-shadow:0 1px 2px rgb(0 0 0/.2)}
+.narrow{max-width:380px;margin:10vh 16px 0;width:calc(100% - 32px);margin-inline:auto}
+.narrow button.primary{width:100%}
+.row{display:flex;gap:8px;align-items:flex-end}
+#qr{display:block;margin:8px auto;background:#fff}
+code{word-break:break-all}
+.muted{color:var(--mut);font-size:.9rem}
+.erro{color:var(--neg);min-height:1.2em;margin:8px 0 0}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.neu{color:var(--mut)}
+
+/* cabeçalho */
+.topbar{display:flex;flex-wrap:wrap;gap:var(--gap);justify-content:space-between;align-items:center;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5}
+.brand{font-size:1.1rem}
+.periodo{display:flex;gap:8px}.periodo input{width:90px}
+.topbar-acoes{display:flex;gap:8px;align-items:center}
+
+/* layout principal */
+.wrap{max-width:1500px;margin:0 auto;padding:var(--gap) 16px 40px;display:grid;gap:var(--gap)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+.graficos{display:grid;grid-template-columns:3fr 2fr;gap:var(--gap)}
+.kpi{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--bd);border-radius:12px;padding:12px 14px;display:grid;gap:2px}
+.kpi.rec{border-left-color:var(--pos)}.kpi.desp{border-left-color:var(--neg)}.kpi.saldo{border-left-color:var(--pri)}
+.kpi-t{font-size:.8rem;color:var(--mut);display:flex;gap:6px;align-items:center}
+.kpi-t i{font-style:normal;opacity:.7}
+.kpi b{font-size:1.45rem;font-variant-numeric:tabular-nums}
+.kpi small{font-size:.72rem;color:var(--mut);min-height:1em}
+.kpi small.up{color:var(--pos)}.kpi small.down{color:var(--neg)}
+
+/* gráficos */
+.chart-box{position:relative;height:220px}
+.chart-box.donut{height:200px;width:200px;flex:none}
+.cat-wrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+.legenda{list-style:none;margin:0;padding:0;flex:1;min-width:180px;display:grid;gap:6px;font-size:.85rem}
+.legenda li{display:flex;align-items:center;gap:8px}
+.legenda .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.legenda .nome{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legenda .val{font-variant-numeric:tabular-nums}.legenda .pct{color:var(--mut);width:42px;text-align:right}
+.vazio{display:grid;place-items:center;min-height:120px;margin:0;color:var(--mut);text-align:center}
+
+/* lançamentos */
+.lanc-head{display:flex;flex-wrap:wrap;gap:var(--gap);justify-content:space-between;align-items:center;margin-bottom:10px}
+.lanc-head h2{margin:0}
+.filtros{display:flex;flex-wrap:wrap;gap:8px}.filtros input{width:220px}
+.tabela-wrap{overflow-x:auto}
+.tabela{width:100%;border-collapse:collapse;min-width:680px}
+.tabela th{text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);padding:8px;border-bottom:1px solid var(--bd)}
+.tabela td{padding:9px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.tabela tbody tr:hover{background:color-mix(in srgb,var(--pri) 6%,transparent)}
+.tabela .num,.tabela td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+.tabela .desc{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabela .acoes-h{text-align:right}
+.tabela td.acoes{text-align:right;white-space:nowrap}
+.tabela td.acoes button{padding:4px 8px;margin-left:4px}
+.badge{font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+
+/* painel lateral */
+#overlay{position:fixed;inset:0;background:rgb(0 0 0/.55);z-index:20}
+#drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);border-left:1px solid var(--bd);padding:16px;z-index:21;transform:translateX(100%);visibility:hidden;transition:transform .2s,visibility .2s;overflow-y:auto}
+#drawer.aberto{transform:none;visibility:visible}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.drawer-head h2{margin:0;font-size:1.1rem}
+#btn-fechar{font-size:1.1rem}
+.seg{display:flex;gap:8px;margin-bottom:10px}
+.seg label{flex:1;flex-direction:row;align-items:center;justify-content:center;border:1px solid var(--bd);border-radius:8px;padding:10px;margin:0;color:var(--tx)}
+.seg label:has(:checked){border-color:var(--pri);background:color-mix(in srgb,var(--pri) 15%,transparent)}
+#form-lanc .row button{flex:1}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--pos);color:#06210f;padding:10px 18px;border-radius:8px;font-weight:600;z-index:30;max-width:calc(100% - 32px)}
+
+/* responsivo */
+@media (max-width:900px){.graficos{grid-template-columns:1fr}}
+@media (max-width:640px){
+  .cards{grid-template-columns:1fr}
+  .topbar{padding:8px 12px}
+  .topbar-acoes{flex:1;justify-content:flex-end}
+  .filtros{width:100%;flex-direction:column}.filtros input,.filtros select,.filtros button{width:100%}
+  .wrap{padding-inline:12px}
+  .cat-wrap{flex-direction:column}
+}
